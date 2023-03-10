@@ -7,7 +7,6 @@
   This is just my assesment but i may be wrong.
   Normally you would not worry so much about this but considering that this is ment for syncing led effects
   and annimations to music via midi, it is very important to have a fast library so we don't get a que on the midi commands.
-  lets put this on git
 */
 
 #include "FastLED.h" // library for controlling the led strip.
@@ -23,8 +22,8 @@ CRGB LEDs[NUM_LEDS]; // led array for fastled
 
 //animation note names
 #define SOLID 127
-#define FLASH 126
-#define PULSE 125
+#define NOISE 126
+#define TWINK 125 
 
 // color struct for saving colors recived over midi
 struct LED {
@@ -33,9 +32,10 @@ struct LED {
 
 // struct that manages individual animation vars
 struct ANIMATION {
-  bool isRunning = false;
+  bool isRunning = false; // 
   uint_least8_t speedMultiplier = 1;
   long elapsedTime = 0;
+  LED led[NUM_LEDS]; // used for led animations that are led dependent
 } Animation[128];
 
 
@@ -104,8 +104,6 @@ void myNoteOn(byte channel, byte note, byte velocity) {
     animationSpeed = 1;
     }
 
-
-
     Animation[no].isRunning = true;
     Animation[no].speedMultiplier = animationSpeed;
   }
@@ -120,6 +118,14 @@ void myNoteOff(byte channel, byte note, byte velocity) {
     ledState = LOW; // teensy led
     Animation[no].isRunning = false;
     Animation[no].elapsedTime = 0;
+
+    // reset the led array for the corosponding animation.
+    for (int i = 0; i < NUM_LEDS; i++) {
+      Animation[no].led[i].R = 0;
+      Animation[no].led[i].G = 0;
+      Animation[no].led[i].B = 0;
+    }
+    
   }
 }
 
@@ -136,7 +142,10 @@ void mixRGB(int led, uint_least8_t R, uint_least8_t G, uint_least8_t B) { // for
 // for now you also have to register the animation note name in all caps at the top
 // and add an if statement in the main loop at the bottom.
 /*=============================================================================*/
-// flash animation. runs only once
+// flash animation. runs only once this animation has been replaced with the solid animation
+// as the same effect can be achived by running the solid animation and then automating the color values.
+// I'm keeping it in the codebase as an example of how to use DT and elapsedTime.
+/*
 void flash(long DT) {
   uint_least8_t R = 0, G = 0, B = 0;
   if (Animation[FLASH].elapsedTime == 0) {
@@ -156,8 +165,24 @@ void flash(long DT) {
     mixRGB(i, R, G, B);
   }
   Animation[FLASH].elapsedTime += DT;
+}*/
+
+// solid animation
+void solid(){ // solid uses color_3 as it's main color so it can be mixed with other animations as a background color.
+  for (int i = 0; i < NUM_LEDS; i++) {
+    mixRGB(i, Color_3.R, Color_3.G, Color_3.B);
+  }
 }
 
+// noise animation
+void noise(long DT){
+
+}
+
+// twinkling stars animation
+void twink(long DT){
+
+}
 
 /*=============================================================================*/
 // setup
@@ -188,7 +213,9 @@ void loop() {
   while (usbMIDI.read()) {}
 
   // run animations
-  if (Animation[FLASH].isRunning) flash(DeltaTime);
+  if (Animation[SOLID].isRunning) solid();
+  if (Animation[NOISE].isRunning) noise(DeltaTime);
+  if (Animation[TWINK].isRunning) twink(DeltaTime);
 
   digitalWrite(ledPin, ledState);
   FastLED.show();
