@@ -7,6 +7,7 @@
   This is just my assesment but i may be wrong.
   Normally you would not worry so much about this but considering that this is ment for syncing led effects
   and annimations to music via midi, it is very important to have a fast library so we don't get a que on the midi commands.
+  lets put this on git
 */
 
 #include "FastLED.h" // library for controlling the led strip.
