@@ -154,7 +154,7 @@ void flash(long DT) {
     B = Color_1.B;
   }
 
-  float flashTime = (ClockTime * Animation[FLASH].speedMultiplier) / 4; // devide by 4 so the first 4 of the speedMultiplier is halfing the animation length instead instead.
+  float flashTime = (ClockTime * Animation[FLASH].speedMultiplier) / 4; // devide by 4 so the first 4 of the speedMultiplier is halfing the animation length instead.
   if (Animation[FLASH].elapsedTime < flashTime) {
     float intensity = (flashTime - (float)Animation[FLASH].elapsedTime) / flashTime;
     R = (uint_least8_t)(Color_1.R * intensity);
@@ -176,19 +176,27 @@ void solid(){ // solid uses color_3 as it's main color so it can be mixed with o
 
 // noise animation
 void noise(long DT){
+  float noiseTime = (ClockTime * Animation[NOISE].speedMultiplier) / 4; // devide by 4 so the first 4 of the speedMultiplier is halfing the animation length instead.
+  if(Animation[NOISE].elapsedTime > noiseTime){
+      // code missing
+    Animation[NOISE].elapsedTime = 0;
+  }
 
+  Animation[NOISE].elapsedTime += DT;
 }
 
 // twinkling stars animation
 void twink(long DT){
   static int fade = 8;
-  float twinkTime = (ClockTime * Animation[TWINK].speedMultiplier) / 4; // devide by 4 so the first 4 of the speedMultiplier is halfing the animation length instead instead.
+  float twinkTime = (ClockTime * Animation[TWINK].speedMultiplier) / 4; // devide by 4 so the first 4 of the speedMultiplier is halfing the animation length instead.
   if(Animation[TWINK].elapsedTime > twinkTime){
-  // Select a random LED
-  int led = random(NUM_LEDS);
-  Animation[TWINK].led[led].R = Color_1.R;
-  Animation[TWINK].led[led].G = Color_1.G;
-  Animation[TWINK].led[led].B = Color_1.B;
+    // Select a random LED
+    int led = random(NUM_LEDS);
+    Animation[TWINK].led[led].R = Color_1.R;
+    Animation[TWINK].led[led].G = Color_1.G;
+    Animation[TWINK].led[led].B = Color_1.B;
+
+    Animation[TWINK].elapsedTime = 0;
   }
 
   for(int i = 0; i < NUM_LEDS; i++){
