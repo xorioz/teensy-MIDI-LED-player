@@ -181,7 +181,45 @@ void noise(long DT){
 
 // twinkling stars animation
 void twink(long DT){
+  static int fade = 8;
+  float twinkTime = (ClockTime * Animation[TWINK].speedMultiplier) / 4; // devide by 4 so the first 4 of the speedMultiplier is halfing the animation length instead instead.
+  if(Animation[TWINK].elapsedTime > twinkTime){
+  // Select a random LED
+  int led = random(NUM_LEDS);
+  Animation[TWINK].led[led].R = Color_1.R;
+  Animation[TWINK].led[led].G = Color_1.G;
+  Animation[TWINK].led[led].B = Color_1.B;
+  }
 
+  for(int i = 0; i < NUM_LEDS; i++){
+    // red
+    if(Animation[TWINK].led[i].R > 0){
+      if(Animation[TWINK].led[i].R > fade){
+        Animation[TWINK].led[i].R = Animation[TWINK].led[i].R - fade;
+      }else{
+        Animation[TWINK].led[i].R = 0;
+      }
+    }
+    // green
+    if(Animation[TWINK].led[i].G > 0){
+      if(Animation[TWINK].led[i].G > fade){
+        Animation[TWINK].led[i].G = Animation[TWINK].led[i].G - fade;
+      }else{
+        Animation[TWINK].led[i].G = 0;
+      }
+    }
+    //blue
+    if(Animation[TWINK].led[i].B > 0){
+      if(Animation[TWINK].led[i].B > fade){
+        Animation[TWINK].led[i].B = Animation[TWINK].led[i].B - fade;
+      }else{
+        Animation[TWINK].led[i].B = 0;
+      }
+    }
+    mixRGB(i, Animation[TWINK].led[i].R, Animation[TWINK].led[i].G, Animation[TWINK].led[i].B);
+  }
+
+  Animation[TWINK].elapsedTime += DT;
 }
 
 /*=============================================================================*/
